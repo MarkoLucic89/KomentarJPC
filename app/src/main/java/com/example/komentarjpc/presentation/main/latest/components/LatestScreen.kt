@@ -3,49 +3,49 @@ package com.example.komentarjpc.presentation.main.latest.components
 import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.komentarjpc.presentation.main.latest.viewmodel.LatestViewModel
-import com.example.komentarjpc.R
+import androidx.paging.LoadState
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
 import com.example.komentarjpc.common.Constants
 import com.example.komentarjpc.domain.model.News
+import com.example.komentarjpc.presentation.common.LoadingListItem
+import com.example.komentarjpc.presentation.common.components.ErrorListItem
 import com.example.komentarjpc.presentation.common.components.NewsBigItemComposable
 import com.example.komentarjpc.presentation.common.components.NewsItemComposable
+import com.example.komentarjpc.presentation.main.latest.viewmodel.LatestViewModel
 
 @Composable
 fun LatestScreen(
     viewModel: LatestViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.value
+    val latestNewsList: LazyPagingItems<News> = viewModel.latestPager.collectAsLazyPagingItems()
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
 
         LazyColumn {
 
-            items(items = state.news) { news: News ->
-
-                if (state.news.indexOf(news) == 0) {
-
+            items(latestNewsList) { news ->
+                if (latestNewsList[0]?.id == news?.id) {
                     NewsBigItemComposable(
-                        news = news,
+                        news = news!!,
                         onItemClick = {
                             Log.d(
                                 Constants.TAG,
                                 "VideosScreenComposable: ON NEWS CLICK: ${it.title}"
                             )
                         })
-
                 } else {
-
                     NewsItemComposable(
-                        news = news,
+                        news = news!!,
                         onItemClick = {
                             Log.d(
                                 Constants.TAG,
@@ -53,20 +53,39 @@ fun LatestScreen(
                             )
                         })
                 }
+            }
 
+            when (latestNewsList.loadState.append) {
+                is LoadState.NotLoading -> Unit
+                LoadState.Loading -> {
+                    item { LoadingListItem() }
+                }
+                is LoadState.Error -> {
+                    item {
+                        ErrorListItem(onClick = {
+
+                        })
+                    }
+                }
             }
 
         }
 
-        if (state.error.isNotBlank()) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_refresh),
-                contentDescription = "Refresh icon",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-        if (state.isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+        latestNewsList.loadState.apply {
+
+            when {
+                refresh is LoadState.Loading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(modifier = Modifier.size(40.dp))
+                    }
+                }
+                append is LoadState.Loading -> {
+
+                }
+                prepend is LoadState.Loading -> {
+
+                }
+            }
         }
 
     }
