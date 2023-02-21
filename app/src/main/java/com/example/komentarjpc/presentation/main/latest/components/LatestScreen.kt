@@ -63,7 +63,7 @@ fun LatestScreen(
                 is LoadState.Error -> {
                     item {
                         ErrorListItem(onClick = {
-
+                            
                         })
                     }
                 }

@@ -1,5 +1,6 @@
 package com.example.komentarjpc.data.remote
 
+import com.example.komentarjpc.data.remote.dto.CategoriesResponseModel
 import com.example.komentarjpc.data.remote.dto.NewsResponseModel
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -23,6 +24,10 @@ interface KomentarApi {
         @Query("search_parameter") searchParameter: String,
         @Query("page") page: Int
     ): NewsResponseModel
+
+
+    @GET("api/categories")
+    suspend fun getCategories(): CategoriesResponseModel
 
 
 }

@@ -1,6 +1,7 @@
 package com.example.komentarjpc.data.repository
 
 import com.example.komentarjpc.data.remote.KomentarApi
+import com.example.komentarjpc.data.remote.dto.CategoriesResponseModel
 import com.example.komentarjpc.data.remote.dto.NewsResponseModel
 import com.example.komentarjpc.domain.repository.KomentarRepository
 import javax.inject.Inject
@@ -19,6 +20,10 @@ class KomentarRepositoryimpl @Inject constructor(
 
     override suspend fun searchNews(searchTerm: String, page: Int): NewsResponseModel {
         return api.searchNews(searchTerm, page)
+    }
+
+    override suspend fun getCategories(): CategoriesResponseModel {
+        return api.getCategories()
     }
 
 

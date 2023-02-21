@@ -99,4 +99,8 @@ dependencies {
     //Paging 3
     implementation 'androidx.paging:paging-compose:1.0.0-alpha14'
 
+    //ViewPager
+    implementation "com.google.accompanist:accompanist-pager:0.23.0"
+    implementation "com.google.accompanist:accompanist-pager-indicators:0.23.0"
+
 }
